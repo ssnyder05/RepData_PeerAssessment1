@@ -14,7 +14,8 @@ This project analyzes data from a personal activity monitoring device. The devic
 
 
 ## Setup:
-```{r setup}
+
+```r
 knitr::opts_chunk$set(echo = TRUE)
 library(readr)
 library(ggplot2)
@@ -23,8 +24,18 @@ suppressPackageStartupMessages(library(dplyr))
 
 
 ## Loading and preprocessing the data
-```{r loadData, cache=TRUE}
+
+```r
 data <- read_csv('activity.zip')
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   steps = col_integer(),
+##   date = col_date(format = ""),
+##   interval = col_integer()
+## )
 ```
 
 
@@ -33,7 +44,8 @@ data <- read_csv('activity.zip')
 <br>
   
 1.) Calculate the total number of steps taken per day
-```{r totalNumSteps}
+
+```r
 nStepsByDate <- data %>% 
     group_by(date) %>%
     summarize(sum(steps, na.rm=T))
@@ -42,24 +54,34 @@ names(nStepsByDate) <- c('date','nSteps')
 <br>
   
 2.) Plot a histogram of the total num of steps taken each day
-```{r}
+
+```r
 hist(nStepsByDate$nSteps, main='Histogram of Total Number\nof Steps per Day',
      xlab='Number of Steps')
 ```
+
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png)
 <br>
   
 3.) Calculate the mean and median of the total num of steps per day
-```{r}
+
+```r
 meanStepsByDate <- mean(nStepsByDate$nSteps, na.rm=T)
 medianStepsByDate <- median(nStepsByDate$nSteps, na.rm=T)
 cat('  Mean = ', meanStepsByDate, '\nMedian = ', medianStepsByDate)
+```
+
+```
+##   Mean =  9354.23 
+## Median =  10395
 ```
 
 
 
 ## What is the average daily activity pattern?
 1.) Make a time series plot of nSteps (avg'ed across all days) vs the 5-min intervals
-```{r}
+
+```r
 nStepsByInterval <- data %>%
     group_by(interval) %>%
     summarize(avgNumSteps=mean(steps, na.rm=T)) %>%
@@ -68,14 +90,26 @@ qplot(interval, avgNumSteps, data=nStepsByInterval,
       main='Number of Steps (averaged across all days)\nvs Time Interval', 
       xlab='Time Interval', ylab='Avg Num Steps', geom='line')
 ```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
 <br>
   
 2.) Which 5-min interval (on avg across all days) contains the max nDays?
-```{r}
+
+```r
 maxIntervalIndex <- with(nStepsByInterval, which(avgNumSteps==max(avgNumSteps)))
 message(paste(capture.output({cat('\n5-min interval with max avg num of days:\n') 
                              print(nStepsByInterval[maxIntervalIndex,])
                              }), collapse='\n'))
+```
+
+```
+## 
+## 5-min interval with max avg num of days:
+## # A tibble: 1 x 3
+##   interval avgNumSteps intNumSteps
+##      <int>       <dbl>       <int>
+## 1      835        206.         206
 ```
 <br>
   
@@ -88,9 +122,14 @@ message(paste(capture.output({cat('\n5-min interval with max avg num of days:\n'
 
 ## Imputing missing values
 1.) Calculate the total number of missing values in the dataset
-```{r}
+
+```r
 nNA <- sum(is.na(data))
 cat('Total number of NAs:', nNA)
+```
+
+```
+## Total number of NAs: 2304
 ```
 <br>
   
@@ -102,7 +141,8 @@ cat('Total number of NAs:', nNA)
   
 3.) Create a new dataset that is equal to the original dataset
     but with the missing data filled in.
-```{r}
+
+```r
 # Copy dataset
 newData <- data
 
@@ -117,11 +157,16 @@ for (i in idx) {
 # Check result
 cat('Total number of NAs in new dataset:', sum(is.na(newData)))
 ```
+
+```
+## Total number of NAs in new dataset: 0
+```
 <br>
   
 4.) Redo the first part of the assignment (ignoring NAs) and compare to 
     new data (with NAs filled in).
-```{r}
+
+```r
 # Calculate the total number of steps taken per day
 nStepsByDate_new <- newData %>%
     group_by(date) %>%
@@ -131,11 +176,20 @@ names(nStepsByDate_new) <- c('date','nSteps')
 # Plot a histogram of the total num of steps taken each day
 hist(nStepsByDate_new$nSteps, main='Total Number of Steps per Day\nafter Imputing Missing Values',
      xlab='Number of Steps')
+```
 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+
+```r
 # Calculate the mean and median of the total num of steps per day
 meanStepsByDate_new <- mean(nStepsByDate_new$nSteps, na.rm=T)
 medianStepsByDate_new <- median(nStepsByDate_new$nSteps, na.rm=T)
 cat('  Mean (after imputing) = ', meanStepsByDate_new, '\nMedian (after imputing) = ', medianStepsByDate_new)
+```
+
+```
+##   Mean (after imputing) =  10765.64 
+## Median (after imputing) =  10762
 ```
 <br>
   
@@ -148,7 +202,8 @@ cat('  Mean (after imputing) = ', meanStepsByDate_new, '\nMedian (after imputing
 
 ## Are there differences in activity patterns between weekdays and weekends?
 1.)  Create a new factor variable in the dataset with two levels indicating whether a given date is a weekday or a weekend.
-```{r}
+
+```r
 weekendNames <- c('Saturday','Sunday')
 nStepsByInterval_new <- newData %>%
     mutate(dayCat=factor(weekdays(date) %in% weekendNames, labels=c('weekday','weekend'))) %>%
@@ -159,10 +214,13 @@ nStepsByInterval_new <- newData %>%
 <br>
   
 2.) Make a panel plot containing time series plots of the number of steps, averaged across all weekday days or weekend days, vs the 5-minute time interval.
-```{r}
+
+```r
 qplot(interval, avgNumSteps, data=nStepsByInterval_new, xlab='Time Interval', 
       ylab='Avg Num Steps', geom='line') + facet_wrap(~ dayCat,ncol=1)
 ```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
 <br>
   
 - Are there differences between the weekdays and weekends?  
