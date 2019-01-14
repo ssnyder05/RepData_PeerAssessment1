@@ -6,13 +6,17 @@ output:
 ---
 
 
-### Introduction:
+<br>
+  
+## Introduction:
 This project analyzes data from a personal activity monitoring device. The device collects data at 5 minute intervals throughout the day for 2 months. The data file name is 'activity.csv' saved in the zip file 'activity.zip'. The variables in the dataset are:  
--    **steps:**     Num of steps taken in a 5-min interval (missing vals are 'NA')  
--     **date:**      The date of the measurement (YYYY-MM-DD)  
-- **interval:**  Identifier for the 5-min interval (e.g., 0,5,10,15)  
+- **steps:** Num of steps taken in a 5-min interval (missing vals are 'NA')  
+- **date:** The date of the measurement (YYYY-MM-DD)  
+- **interval:** Identifier for the 5-min interval (e.g., 0,5,10,15)  
 
 
+<br>
+  
 ## Setup:
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
@@ -22,6 +26,8 @@ suppressPackageStartupMessages(library(dplyr))
 ```
 
 
+<br>
+  
 ## Loading and preprocessing the data
 ```{r loadData, cache=TRUE}
 data <- read_csv('activity.zip')
@@ -29,10 +35,12 @@ data <- read_csv('activity.zip')
 
 
 
+<br>
+  
 ## What is mean total number of steps taken per day?
 <br>
   
-1.) Calculate the total number of steps taken per day
+1.) Calculate the total number of steps taken per day  
 ```{r totalNumSteps}
 nStepsByDate <- data %>% 
     group_by(date) %>%
@@ -41,14 +49,14 @@ names(nStepsByDate) <- c('date','nSteps')
 ```
 <br>
   
-2.) Plot a histogram of the total num of steps taken each day
+2.) Plot a histogram of the total num of steps taken each day  
 ```{r}
 hist(nStepsByDate$nSteps, main='Histogram of Total Number\nof Steps per Day',
      xlab='Number of Steps')
 ```
 <br>
   
-3.) Calculate the mean and median of the total num of steps per day
+3.) Calculate the mean and median of the total num of steps per day  
 ```{r}
 meanStepsByDate <- mean(nStepsByDate$nSteps, na.rm=T)
 medianStepsByDate <- median(nStepsByDate$nSteps, na.rm=T)
@@ -57,8 +65,12 @@ cat('  Mean = ', meanStepsByDate, '\nMedian = ', medianStepsByDate)
 
 
 
+<br>
+  
 ## What is the average daily activity pattern?
-1.) Make a time series plot of nSteps (avg'ed across all days) vs the 5-min intervals
+<br>
+  
+1.) Make a time series plot of nSteps (avg'ed across all days) vs the 5-min intervals  
 ```{r}
 nStepsByInterval <- data %>%
     group_by(interval) %>%
@@ -70,24 +82,26 @@ qplot(interval, avgNumSteps, data=nStepsByInterval,
 ```
 <br>
   
-2.) Which 5-min interval (on avg across all days) contains the max nDays?
+2.) Which 5-min interval (on avg across all days) contains the max nDays?  
 ```{r}
 maxIntervalIndex <- with(nStepsByInterval, which(avgNumSteps==max(avgNumSteps)))
 message(paste(capture.output({cat('\n5-min interval with max avg num of days:\n') 
                              print(nStepsByInterval[maxIntervalIndex,])
                              }), collapse='\n'))
 ```
-<br>
-  
 - The average daily activity pattern follows the times series plot above.  
 -- The average number of steps per 5-min time interval hovers around 50 steps.  
 -- There are 3 increases to about 100 steps at approximately 1200hrs, 1530 hrs, and 1800hrs.  
--- There is a single spike of over 200 steps at 0835hrs.
+-- There is a single spike of over 200 steps at 0835hrs.  
 
 
 
+<br>
+  
 ## Imputing missing values
-1.) Calculate the total number of missing values in the dataset
+<br>
+  
+1.) Calculate the total number of missing values in the dataset  
 ```{r}
 nNA <- sum(is.na(data))
 cat('Total number of NAs:', nNA)
@@ -95,13 +109,12 @@ cat('Total number of NAs:', nNA)
 <br>
   
 2.) Devise a strategy for filling in the missing data in the dataset  
--- Replace all NAs with the mean for that 5-min interval.
-  (These mean values were saved to nStepsByInterval)
-<br>
+-- Replace all NAs with the mean for that 5-min interval. 
+  (These mean values were saved to nStepsByInterval)  
 <br>
   
 3.) Create a new dataset that is equal to the original dataset
-    but with the missing data filled in.
+    but with the missing data filled in.  
 ```{r}
 # Copy dataset
 newData <- data
@@ -120,7 +133,7 @@ cat('Total number of NAs in new dataset:', sum(is.na(newData)))
 <br>
   
 4.) Redo the first part of the assignment (ignoring NAs) and compare to 
-    new data (with NAs filled in).
+    new data (with NAs filled in).  
 ```{r}
 # Calculate the total number of steps taken per day
 nStepsByDate_new <- newData %>%
@@ -146,8 +159,12 @@ cat('  Mean (after imputing) = ', meanStepsByDate_new, '\nMedian (after imputing
 
 
 
+<br>
+  
 ## Are there differences in activity patterns between weekdays and weekends?
-1.)  Create a new factor variable in the dataset with two levels indicating whether a given date is a weekday or a weekend.
+<br>
+  
+1.)  Create a new factor variable in the dataset with two levels indicating whether a given date is a weekday or a weekend.  
 ```{r}
 weekendNames <- c('Saturday','Sunday')
 nStepsByInterval_new <- newData %>%
@@ -158,7 +175,7 @@ nStepsByInterval_new <- newData %>%
 ```
 <br>
   
-2.) Make a panel plot containing time series plots of the number of steps, averaged across all weekday days or weekend days, vs the 5-minute time interval.
+2.) Make a panel plot containing time series plots of the number of steps, averaged across all weekday days or weekend days, vs the 5-minute time interval.  
 ```{r}
 qplot(interval, avgNumSteps, data=nStepsByInterval_new, xlab='Time Interval', 
       ylab='Avg Num Steps', geom='line') + facet_wrap(~ dayCat,ncol=1)

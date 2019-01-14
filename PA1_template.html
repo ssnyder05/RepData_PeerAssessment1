@@ -188,12 +188,14 @@ $(document).ready(function () {
 </div>
 
 
-<div id="introduction" class="section level3">
-<h3>Introduction:</h3>
+<p><br></p>
+<div id="introduction" class="section level2">
+<h2>Introduction:</h2>
 <p>This project analyzes data from a personal activity monitoring device. The device collects data at 5 minute intervals throughout the day for 2 months. The data file name is ‘activity.csv’ saved in the zip file ‘activity.zip’. The variables in the dataset are:<br />
 - <strong>steps:</strong> Num of steps taken in a 5-min interval (missing vals are ‘NA’)<br />
 - <strong>date:</strong> The date of the measurement (YYYY-MM-DD)<br />
 - <strong>interval:</strong> Identifier for the 5-min interval (e.g., 0,5,10,15)</p>
+<p><br></p>
 </div>
 <div id="setup" class="section level2">
 <h2>Setup:</h2>
@@ -201,6 +203,7 @@ $(document).ready(function () {
 library(readr)
 library(ggplot2)
 suppressPackageStartupMessages(library(dplyr))</code></pre>
+<p><br></p>
 </div>
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
@@ -211,6 +214,7 @@ suppressPackageStartupMessages(library(dplyr))</code></pre>
 ##   date = col_date(format = &quot;&quot;),
 ##   interval = col_integer()
 ## )</code></pre>
+<p><br></p>
 </div>
 <div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
 <h2>What is mean total number of steps taken per day?</h2>
@@ -231,9 +235,11 @@ medianStepsByDate &lt;- median(nStepsByDate$nSteps, na.rm=T)
 cat('  Mean = ', meanStepsByDate, '\nMedian = ', medianStepsByDate)</code></pre>
 <pre><code>##   Mean =  9354.23 
 ## Median =  10395</code></pre>
+<p><br></p>
 </div>
 <div id="what-is-the-average-daily-activity-pattern" class="section level2">
 <h2>What is the average daily activity pattern?</h2>
+<p><br></p>
 <p>1.) Make a time series plot of nSteps (avg’ed across all days) vs the 5-min intervals</p>
 <pre class="r"><code>nStepsByInterval &lt;- data %&gt;%
     group_by(interval) %&gt;%
@@ -254,23 +260,25 @@ message(paste(capture.output({cat('\n5-min interval with max avg num of days:\n'
 ##   interval avgNumSteps intNumSteps
 ##      &lt;int&gt;       &lt;dbl&gt;       &lt;int&gt;
 ## 1      835        206.         206</code></pre>
-<p><br></p>
 <ul>
 <li>The average daily activity pattern follows the times series plot above.<br />
 – The average number of steps per 5-min time interval hovers around 50 steps.<br />
 – There are 3 increases to about 100 steps at approximately 1200hrs, 1530 hrs, and 1800hrs.<br />
 – There is a single spike of over 200 steps at 0835hrs.</li>
 </ul>
+<p><br></p>
 </div>
 <div id="imputing-missing-values" class="section level2">
 <h2>Imputing missing values</h2>
+<p><br></p>
 <p>1.) Calculate the total number of missing values in the dataset</p>
 <pre class="r"><code>nNA &lt;- sum(is.na(data))
 cat('Total number of NAs:', nNA)</code></pre>
 <pre><code>## Total number of NAs: 2304</code></pre>
 <p><br></p>
 <p>2.) Devise a strategy for filling in the missing data in the dataset<br />
-– Replace all NAs with the mean for that 5-min interval. (These mean values were saved to nStepsByInterval) <br> <br></p>
+– Replace all NAs with the mean for that 5-min interval. (These mean values were saved to nStepsByInterval)<br />
+<br></p>
 <p>3.) Create a new dataset that is equal to the original dataset but with the missing data filled in.</p>
 <pre class="r"><code># Copy dataset
 newData &lt;- data
@@ -314,9 +322,11 @@ cat('  Mean (after imputing) = ', meanStepsByDate_new, '\nMedian (after imputing
 – The mean and median of the new dataset are much closer together than in the original dataset (almost identical).<br />
 – From visual inspection, the histogram of the new dataset is more normally distributed.</li>
 </ul>
+<p><br></p>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
+<p><br></p>
 <p>1.) Create a new factor variable in the dataset with two levels indicating whether a given date is a weekday or a weekend.</p>
 <pre class="r"><code>weekendNames &lt;- c('Saturday','Sunday')
 nStepsByInterval_new &lt;- newData %&gt;%
